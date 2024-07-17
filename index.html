@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>hireful sprint map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+      .hireful-nav {
+        display: flex;
+        background-color: #463e74;
+        border-color: #463e74;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+      }
+      .hireful-logo {
+        display: flex;
+        align-self: center;
+        justify-content: center;
+          height: 23px;
+          margin-left: 25px;
+          width: 93px;
+      }
+      .hireful-nav-title {
+        display: flex;
+        width: 80%;
+        align-self: center;
+        justify-content: center;
+        font-size: 1.5em;
+        font-weight: 700;
+      }
+      .hireful-nav-select {
+        display: flex;
+        align-self: center;
+        justify-content: center;
+        width: 18%;
+      }
+      #boardSelection {
+        display: flex;
+        align-self: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 1em;
+      }
+      #apiError {
+        font-size: 0.9 em;
+        position: absolute;
+        top: 1.5em;
+        right: 20%;
+        color: #ff3333;
+        font-style: italic;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="hireful-nav">
+      <div class="hireful-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 254 54.41" style="enable-background:new 0 0 254 54.41;" xml:space="preserve">
+          <style type="text/css">
+            .st0{fill:#FFFFFF;}
+            .st1{fill:#EED137;}
+          </style>
+          <g>
+            <g>
+              <path class="st0" d="M31.4,50.69c0,2.3-1.42,3.47-4.26,3.47s-4.26-1.18-4.26-3.47V33.32c0-2.14-0.32-4.03-1.26-5.36    c-1.19-1.74-3.08-2.53-5.61-2.53c-3.47,0-5.93,1.58-7.5,3.63V50.7c0,2.3-1.42,3.47-4.26,3.47S0,53,0,50.7V3.49    c0-2.3,1.42-3.47,4.26-3.47s4.26,1.18,4.26,3.47v19.27c2.05-2.92,5.68-4.81,10.51-4.81c4.35,0,7.89,1.34,10.19,4.74    c1.5,2.21,2.21,5.29,2.21,9.24L31.4,50.69L31.4,50.69z"/>
+              <path class="st0" d="M50.43,12.24c-3.08,0-5.38-2.21-5.38-5.29s2.3-5.29,5.38-5.29s5.36,2.21,5.36,5.29S53.51,12.24,50.43,12.24z     M54.7,50.69c0,2.3-1.42,3.47-4.26,3.47s-4.26-1.18-4.26-3.47V21.55c0-2.3,1.42-3.47,4.26-3.47s4.26,1.19,4.26,3.47V50.69z"/>
+              <path class="st0" d="M78.39,50.69c0,2.3-1.42,3.47-4.26,3.47c-2.83,0-4.26-1.18-4.26-3.47V21.55c0-2.3,1.34-3.47,4.11-3.47    c2.92,0,4.03,1.42,3.95,3.47v2.76c1.89-3.95,5.36-6.39,9.95-6.39c2.6,0,3.63,1.19,3.63,3.87c0,2.69-1.1,3.87-4.11,3.95    c-4.66,0.16-7.27,1.5-9,4.81v20.14H78.39z"/>
+              <path class="st0" d="M129.47,48.16c0,1.26-0.78,2.37-2.44,3.4c-2.99,1.89-6.71,2.85-11.06,2.85c-10.9,0-17.37-6.87-17.37-18.17    c0-11.22,6.39-18.56,16.35-18.56c9.32,0,15.4,6.55,15.4,15.64c0,4.97-2.05,5.52-5.06,5.52h-18.24c0.78,5.22,3.71,8.3,9.32,8.3    c2.44,0,4.74-0.55,6.63-1.66c1.1-0.62,1.98-1.1,2.92-1.1C128.37,44.38,129.47,46.59,129.47,48.16z M106.97,32.61h15.08    c0-4.74-2.44-8.14-7.27-8.14C110.36,24.47,107.67,27.39,106.97,32.61z"/>
+              <path class="st0" d="M169.03,5.52c0,1.42-0.71,3.95-3.01,3.95c-1.1,0-2.99-0.71-4.97-0.71c-2.44,0-4.26,1.1-5.22,2.76    c-1.1,1.74-1.1,4.19-1.1,6.16v1.1h6.48c2.3,0,3.47,1.19,3.47,3.56s-1.18,3.56-3.47,3.56h-6.48V50.7c0,2.3-1.42,3.47-4.26,3.47    s-4.26-1.18-4.26-3.47V25.91h-3.95c-2.3,0-3.47-1.19-3.47-3.56s1.19-3.56,3.47-3.56h3.95v-1.03c0-2.6,0-7.11,2.53-10.67    c2.44-3.4,6.79-5.52,11.84-5.52c2.21,0,4.74,0.39,6.48,1.18C168.64,3.39,169.03,4.35,169.03,5.52z"/>
+              <path class="st0" d="M198.01,50.69v-1.74c-2.05,3.4-5.93,5.29-10.81,5.29c-4.35,0-7.73-1.5-9.79-4.74    c-1.5-2.14-2.21-5.29-2.21-9.16V21.55c0-2.3,1.42-3.47,4.26-3.47s4.26,1.19,4.26,3.47v17.45c0,2.05,0.23,4.11,1.26,5.45    c1.1,1.5,2.85,2.37,5.38,2.37c2.99,0,5.61-1.19,7.27-3.71V21.57c0-2.3,1.42-3.47,4.26-3.47c2.85,0,4.26,1.19,4.26,3.47V50.7    c0,2.3-1.34,3.47-4.11,3.47C199.11,54.16,198.01,52.75,198.01,50.69z"/>
+              <path class="st0" d="M229.82,50.69c0,2.3-1.42,3.47-4.26,3.47s-4.26-1.18-4.26-3.47V3.47c0-2.3,1.42-3.47,4.26-3.47    s4.26,1.18,4.26,3.47V50.69z"/>
+            </g>
+            <g>
+              <path class="st1" d="M248.62,54.41c-3.15,0-5.36-2.3-5.36-5.36c0-3.07,2.21-5.38,5.36-5.38s5.38,2.3,5.38,5.38    S251.78,54.41,248.62,54.41z"/>
+            </g>
+          </g>
+          </svg>
+      </div>
+      <div class="hireful-nav-title">
+        hireful sprints on a world map
+      </div>
+      <div id="apiError">
+        Whoops! It looks like our map elves are taking a break.<br />Please try again in a bit!
+      </div>
+      <div class="hireful-nav-select">
+        <select id="boardSelection">
+          
+        </select>
+      </div>
+    </nav>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      // Data: countries and their respective cities
+const sprintData = {
+  "Armada Sprint Board": [
+    " Rabat",
+    " Athens",
+    " Victoria",
+    " Vatican City",
+    " Kathmandu",
+    " London",
+    " Podgorica",
+    " Vaduz",
+    " Moroni",
+    " Hanoi",
+    " Lilongwe",
+    " Vaiaku",
+    " Freetown",
+    " Vientiane",
+    " Rangoon",
+    " N'djamena",
+    " Quito",
+    " Dushanbe",
+    " New Delhi",
+    " San Salvador",
+    " Yamoussoukro",
+    " Manila",
+    " Algiers",
+    " Moroni",
+    " Madrid",
+    " Dili",
+    " Maseru",
+    " Tegucigalpa",
+    " Maseru 3",
+  ],
+  "Red Team Sprint": [
+    " Launda",
+    " Pyongyang",
+    " Nicosia",
+    " Helsinki",
+    " Baku",
+    " Kabul",
+    " Ashgabat",
+    " Damascus",
+    " Malé",
+    " Pretoria",
+    " Guatemala City",
+    " Maputo",
+    " Kingston",
+    " Luanda",
+    " Malabo",
+    " London",
+    " Phnom Penh",
+    " Djibouti",
+    " Tripoli",
+    " Tegucigalpa",
+    " Melekeok",
+    " Beirut",
+    " Beijing",
+    " Asuncion",
+    " Addis Ababa",
+    " Lusaka",
+  ],
+  "Blue Team Sprint": [
+    " Pyongyang",
+    " Nicosia",
+    " Helsinki",
+    " Baku",
+    " Kabul",
+    " Ashgabat",
+    " Amman",
+    " Bratislava",
+    " Bratislava",
+    " Malé",
+    " Pretoria",
+    " Nouakchott",
+    " Brasilia",
+    " Abuja",
+    " North Pole",
+    " Tegucigalpa",
+    " New Delhi",
+    " Kathmandu",
+    " London",
+    " Helsinki",
+    " Melekeok",
+    " Ulaanbaatar",
+    " Brazzaville",
+    " Asuncion",
+    " Skopje",
+  ],
+};
+
+// Array of city names
+let cities = [];
+
+const apiError = document.getElementById('apiError');
+
+// Reference to the select element
+const boardSelection = document.getElementById('boardSelection');
+
+const boardOptions = Object.keys(sprintData);
+
+// Function to populate select options
+const populateBoardSelect = (selectElement, optionsArray) => {
+  // Clear any existing options
+  selectElement.innerHTML = '';
+
+  // Create and append a default option
+  const defaultOption = document.createElement('option');
+  defaultOption.text = 'Select a board';
+  defaultOption.value = '';
+  selectElement.appendChild(defaultOption);
+
+  // Iterate through the array of options
+  optionsArray.forEach(board => {
+    // Create a new option element
+    const option = document.createElement('option');
+    option.value = board;
+    option.text = board;
+    
+    // Append the option to the select element
+    selectElement.appendChild(option);
+  });
+};
+
+// Populate the select element with city options
+populateBoardSelect(boardSelection, boardOptions);
+
+// Batch ID to track the current processing batch
+let currentBatchId = 0;
+
+// Function to update city options based on selected board
+const updateCityOptions = () => {
+  currentBatchId++; // Increment batch ID to invalidate previous batch
+  clearMarkers();
+  cities = sprintData[boardSelection.value];
+  processCities(currentBatchId); // Pass the new batch ID to the processing function
+};
+
+// Add event listener to the board select element
+boardSelection.addEventListener('change', updateCityOptions);
+
+// Initialize the map
+const map = L.map("map").setView([20, 0], 3);
+
+// Add OpenStreetMap tiles
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+}).addTo(map);
+
+// Array to keep track of markers
+let markers = [];
+
+// Function to clear markers from the map
+const clearMarkers = () => {
+  markers.forEach(marker => {
+    map.removeLayer(marker);
+  });
+  markers = [];
+};
+
+// Geocode city names with retry logic
+const geocodeCityWithRetry = async (city, batchId, retries = 3, delay = 1000) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      // Check if the current batch ID is still valid
+      if (batchId !== currentBatchId) {
+        return; // Exit if the batch ID is no longer valid
+      }
+
+      const response = await axios.get(
+        "https://nominatim.openstreetmap.org/search",
+        {
+          params: {
+            q: city,
+            format: "json",
+          },
+        }
+      );
+      if (response.data.length > 0) {
+        const { lat, lon } = response.data[0];
+        const marker = L.marker([lat, lon])
+          .addTo(map)
+          .bindPopup(`<b>${city}</b>`)
+          .openPopup();
+        markers.push(marker); // Keep track of the marker
+        return;
+      }
+    } catch (error) {
+      console.error(
+        `Error geocoding ${city} (Attempt ${attempt}/${retries}):`,
+        error.message
+      );
+      if (attempt < retries) {
+        await new Promise((res) => setTimeout(res, delay)); // Wait before retrying
+      } else {
+        apiError.style.display = 'block';
+      }
+    }
+  }
+};
+
+// Process cities with throttling
+const processCities = async (batchId) => {
+  console.log('> cities:', cities);
+  if (cities){
+    for (const city of cities) {
+    // Check if the current batch ID is still valid
+    if (batchId !== currentBatchId) {
+      return; // Exit if the batch ID is no longer valid
+    }
+
+    await new Promise((res) => setTimeout(res, 500)); // Throttle delay between requests
+    await geocodeCityWithRetry(city, batchId);
+  }
+  }
+  console.log("All cities processed");
+};
+
+    </script>
+  </body>
+</html>
